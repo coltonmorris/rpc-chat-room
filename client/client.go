@@ -25,31 +25,12 @@ func main() {
   // welcome user
   fmt.Printf("Hi %v, connecting to %v:%v...\n", *handlePtr, *hostPtr, *portPtr)
 
-  // list request
-  // TODO first firgure out the parition of server.go and handlers.go
-  // TODO, start here. modify scheme.go
-
-
-	// Synchronous call
-	args := RpcScheme.Args{17, 8}
-	var reply int
-	err = client.Call("Arith.Multiply", args, &reply)
-	if err != nil {
-		log.Fatal("arith error:", err)
-	}
-	fmt.Printf("Arith: %d*%d=%d\n", args.A, args.B, reply)
-
-	var quot RpcScheme.Quotient
-	err = client.Call("Arith.Divide", args, &quot)
-	if err != nil {
-		log.Fatal("arith error:", err)
-	}
-	fmt.Printf("Arith: %d/%d=%d remainder %d\n", args.A, args.B, quot.Quo, quot.Rem)
-
-	var tmp RpcScheme.Temp
-	err = client.Call("Arith.Tell", args, &tmp)
+  // tell handler
+  request := RpcScheme.TellRequest{"sup brotato", "Colton"}
+  response := RpcScheme.TellResponse{}
+	err = client.Call("Handler.Tell", &request, &response)
 	if err != nil {
 		log.Fatal("error: ", err)
 	}
-	fmt.Printf("Hey: %v", tmp.Message)
+	fmt.Printf("Hey: %v\n", response)
 }

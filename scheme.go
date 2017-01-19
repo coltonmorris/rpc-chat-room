@@ -1,14 +1,7 @@
 package RpcScheme
 
-type Temp struct {
-	//TODO, test if changing capitals affects the program
-	Message string
+type TellRequest struct {
+  Message, User string
 }
+type TellResponse struct { }
 
-type Args struct {
-	A, B int
-}
-
-type Quotient struct {
-	Quo, Rem int
-}
