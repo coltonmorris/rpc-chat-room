@@ -1,38 +1,12 @@
 package main
 
 import (
-  "../"
-  "errors"
 	"flag"
 	"fmt"
 	"net"
 	"net/http"
 	"net/rpc"
 )
-
-type Arith int
-
-// have the reciever be a pointer if it is changing state
-func (t *Arith) Divide(args *RpcScheme.Args, quo *RpcScheme.Quotient) error {
-  if args.B == 0 {
-    return errors.New("divide by zero")
-  }
-  quo.Quo = args.A / args.B
-  quo.Rem = args.A % args.B
-  return nil
-}
-
-func (t *Arith) Tell(args *RpcScheme.Args, tmp *RpcScheme.Temp) error {
-  tmp.Message = "testing you bonobo"
-  fmt.Println("hello ther colton")
-  return nil
-}
-
-func (t *Arith) Multiply(args *RpcScheme.Args, reply *int) error {
-	*reply = args.A * args.B
-	return nil
-}
-
 
 func main() {
 	// parse command line arguments
@@ -44,10 +18,9 @@ func main() {
 	address := net.JoinHostPort(*hostPtr, *portPtr)
 
 	// begin rpc listener
-  arith := new(Arith)
-	rpc.Register(arith)
+  handlers := new(Handler)
+	rpc.Register(handlers)
 	rpc.HandleHTTP()
-
 	fmt.Println("Listening on ", address)
 	err := http.ListenAndServe(address, nil)
 	if err != nil {
