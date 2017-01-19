@@ -1,7 +1,7 @@
 package RpcScheme
 
 type Temp struct {
-	//todo, test if changing capitals affects the program
+	//TODO, test if changing capitals affects the program
 	Message string
 }
 

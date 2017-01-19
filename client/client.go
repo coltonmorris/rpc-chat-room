@@ -26,6 +26,7 @@ func main() {
   fmt.Printf("Hi %v, connecting to %v:%v...\n", *handlePtr, *hostPtr, *portPtr)
 
   // list request
+  // TODO first firgure out the parition of server.go and handlers.go
   // TODO, start here. modify scheme.go
 
 
