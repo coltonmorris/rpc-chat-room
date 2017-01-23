@@ -8,6 +8,7 @@ import (
   "net"
 	"net/rpc"
   "time"
+  "bufio"
 )
 
 func main() {
@@ -47,6 +48,7 @@ func main() {
     }
   // }()
 
+  scanner := bufio.NewScanner(strings.NewReader())
 
   //go func() {
   //  for {
