@@ -6,11 +6,11 @@ import (
 	"net"
 	"net/http"
 	"net/rpc"
-  "time"
+	"time"
 )
 
 type State struct {
-	Users map[string][]string
+	Users    map[string][]string
 	Shutdown bool
 }
 
@@ -25,28 +25,28 @@ func main() {
 	// combine host and port
 	address := net.JoinHostPort(*hostPtr, *portPtr)
 
-  //prepare reciever with a buffer size of 1 to prevent race condiitons
+	//prepare reciever with a buffer size of 1 to prevent race condiitons
 	state := &State{
-		Users : make(map[string][]string),
-		Shutdown : false,
+		Users:    make(map[string][]string),
+		Shutdown: false,
 	}
-  server := Server(make(chan *State, 1))
-  server <- state
+	server := Server(make(chan *State, 1))
+	server <- state
 
 	// begin rpc listener
 	rpc.Register(server)
 	rpc.HandleHTTP()
 	fmt.Println("Listening on ", address)
 
-  go http.ListenAndServe(address, nil)
-  for {
-    state = <- server
-    
-    if state.Shutdown == true {
-      fmt.Println("exit")
-      return
-    }
-      server <- state
-      time.Sleep(time.Second)
-  }
+	go http.ListenAndServe(address, nil)
+	for {
+		state = <-server
+
+		if state.Shutdown == true {
+			fmt.Println("exit")
+			return
+		}
+		server <- state
+		time.Sleep(time.Second)
+	}
 }

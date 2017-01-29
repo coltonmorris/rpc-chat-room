@@ -1,38 +1,38 @@
 package RpcScheme
 
 type TellRequest struct {
-  Sender, Target, Message string
+	Sender, Target, Message string
 }
-type TellResponse struct { }
+type TellResponse struct{}
 
 type LoginRequest struct {
-  Handle string
+	Handle string
 }
-type LoginResponse struct { }
+type LoginResponse struct{}
 
-type ListRequest struct { }
+type ListRequest struct{}
 type ListResponse struct {
-  Users []string
+	Users []string
 }
 
 type CheckMessagesRequest struct {
-  Handle string
+	Handle string
 }
 type CheckMessagesResponse struct {
-  Messages []string
+	Messages []string
 }
 
 type SayRequest struct {
-  Sender, Message string
+	Sender, Message string
 }
-type SayResponse struct { }
+type SayResponse struct{}
 
 type LogoutRequest struct {
-  Handle string
+	Handle string
 }
-type LogoutResponse struct { }
+type LogoutResponse struct{}
 
-type ShutdownRequest struct { 
-  Handle string
+type ShutdownRequest struct {
+	Handle string
 }
-type ShutdownResponse struct { }
+type ShutdownResponse struct{}
