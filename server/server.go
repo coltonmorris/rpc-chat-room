@@ -49,17 +49,4 @@ func main() {
       server <- state
       time.Sleep(time.Second)
   }
-//	err := http.ListenAndServe(address, nil)
-//	if err != nil {
-//		fmt.Println(err.Error())
-//	}
-  //NOTES:
-  /*
-    maybe do go http.ListenAndServe(address, nil)
-
-    <- server.Shutdown  this will be called when the server closes? or if it's full?
-  */
-
-  // return, aka exit this main loop, when the shutdown channel is true
-  // maybe defer, which calls a function when main is returned
 }

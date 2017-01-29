@@ -4,6 +4,7 @@ import (
 	"../" // TODO find out the proper way to do this
 	"errors"
 	"fmt"
+  "time"
 )
 
 func (server Server) Tell(request *RpcScheme.TellRequest, response *RpcScheme.TellResponse) error {
@@ -11,7 +12,6 @@ func (server Server) Tell(request *RpcScheme.TellRequest, response *RpcScheme.Te
 
   // dont message yourself silly
   if request.Sender == request.Target {
-    // TODO refactor so that you call Tell on yourself. currently cant reuse these functions
     state.Users[request.Sender] = append(state.Users[request.Sender], "You can not send a message to yourself")
 
   // check if the Target exists
@@ -42,10 +42,16 @@ func (server Server) Login(request *RpcScheme.LoginRequest, response *RpcScheme.
   
   state.Users[handle] = append(state.Users[handle], "You have successfully logged in.")
 
-  // TODO
   // Now tell everyone this person logged in
-
+  message := "I just logged in."
+  fmt.Println(message)
+  sayRequest := RpcScheme.SayRequest{request.Handle, message}
+  sayResponse := RpcScheme.SayResponse{}
   server <- state
+  err := server.Say(&sayRequest, &sayResponse)
+	if err != nil {
+		return err
+	}
   return nil
 }
 
@@ -79,11 +85,12 @@ func (server Server) CheckMessages(request *RpcScheme.CheckMessagesRequest, resp
 func (server Server) Say(request *RpcScheme.SayRequest, response *RpcScheme.SayResponse) error {
   state := <- server
 
-  fmt.Println(request.Sender, " just said to everybody: ", request.Message)
+  fmt.Println(request.Sender, "just said to everybody: ", request.Message)
+  message := request.Sender + " says: " + request.Message
   for key, _ := range state.Users {
     // dont send the message to the sender
     if key != request.Sender {
-      state.Users[key] = append(state.Users[key], request.Message)
+      state.Users[key] = append(state.Users[key], message)
     }
   }
   
@@ -96,9 +103,19 @@ func (server Server) Logout(request *RpcScheme.LogoutRequest, response *RpcSchem
   // check if the handle exists, and delete it. Otherwise return an error
   if _, ok := state.Users[request.Handle]; ok {
     delete(state.Users, request.Handle)
-    fmt.Println("************************* ", state.Users)
+
+    // say to everybody that we logged out
+    message := "I am logging out."
+    fmt.Println(message)
+    sayRequest := RpcScheme.SayRequest{request.Handle, message}
+    sayResponse := RpcScheme.SayResponse{}
     server <- state
+    err := server.Say(&sayRequest, &sayResponse)
+    if err != nil {
+      return err
+    }
     return nil
+
   } else {
     server <- state
     err := "Could not logout user: " + request.Handle
@@ -108,21 +125,22 @@ func (server Server) Logout(request *RpcScheme.LogoutRequest, response *RpcSchem
 
 func (server Server) Shutdown(request *RpcScheme.ShutdownRequest, response *RpcScheme.ShutdownResponse) error {
   state := <- server
-  
+
+  // say to everybody that the server is shutdown
+  message := "I just shutdown the server."
+  fmt.Println(message)
+  sayRequest := RpcScheme.SayRequest{request.Handle, message}
+  sayResponse := RpcScheme.SayResponse{}
+  server <- state
+  err := server.Say(&sayRequest, &sayResponse)
+	if err != nil {
+		return err
+	}
+  // wait a second to ensure everyone gets the shutdown message :)
+  time.Sleep(time.Second)
   // begin the shutdown process by setting the flag
+  state = <- server
   state.Shutdown = true
-
-  // TODO this is not gauranteed to be logged out to the clients.
-  // say to everybody taht the server is shutdown
-  message := request.Handle + " just shutdown the server."
-  for key, _ := range state.Users {
-    // dont send the message to the sender
-    if key != request.Handle {
-      state.Users[key] = append(state.Users[key], message)
-    }
-  }
-
-
   server <- state
   return nil
 }

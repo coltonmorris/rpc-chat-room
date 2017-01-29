@@ -5,6 +5,7 @@ import (
   "fmt"
   "log"
   "net/rpc"
+  "os"
 )
 
 func Login(client *rpc.Client, handle string) {
@@ -33,6 +34,7 @@ func ListUsers(client *rpc.Client, handle string) {
     return 
   }
 
+  // TODO probably should just add this to the messages on the server side
   fmt.Println("List of users currently online:")
   for i := 0; i < len(response.Users); i++ {
     if response.Users[i] != handle {
@@ -65,6 +67,8 @@ func Logout(client *rpc.Client, handle string) {
   err := client.Call("Server.Logout", &request, &response)
   if err != nil {
     log.Fatal("error: ", err)
+  } else {
+    os.Exit(0)
   }
 }
 
@@ -85,7 +89,7 @@ func CheckMessages(client *rpc.Client, handle string) {
     log.Fatal("error: ", err)
   }
   for i := 0; i < len(response.Messages); i++ {
-    fmt.Println("Message: ", response.Messages[i])
+    fmt.Println(response.Messages[i])
   }
 }
 
